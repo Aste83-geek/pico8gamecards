@@ -217,6 +217,43 @@ a:focus-visible, button:focus-visible { outline: 2px solid var(--accent); outlin
 }
 .faq-item h3 { margin: 0 0 10px; color: #ffd34e; line-height: 1.35; }
 .faq-item p { margin: 0; color: #dedede; line-height: 1.65; }
+
+.hero { padding: clamp(30px, 5vw, 60px) 16px 44px; }
+.hero-art { max-width: 460px; margin: 18px auto 12px; }
+.hero .actions { margin-top: 12px; }
+.tile-actions { display: flex; flex-wrap: wrap; gap: 6px; }
+.tile-actions button {
+  min-height: 36px;
+  padding: 4px 8px;
+  border: 1px solid var(--border);
+  border-radius: 4px;
+  background: var(--bg);
+  color: var(--ink);
+  font-size: .8rem;
+}
+.tile-actions button:hover, .card-turn[aria-pressed="true"] { border-color: var(--gold); color: var(--gold); }
+.card-number-note { font-size: .85rem; }
+#card-detail {
+  width: min(760px, calc(100% - 24px));
+  max-height: calc(100% - 24px);
+  padding: clamp(14px, 4vw, 30px);
+  border: 1px solid var(--border);
+  border-radius: 9px;
+  background: var(--panel);
+  color: var(--ink);
+}
+#card-detail::backdrop { background: #000c; }
+#card-detail a { color: var(--gold); font-weight: 700; }
+.detail-close { display: flex; justify-content: flex-end; }
+.detail-faces { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 16px; margin-top: 18px; }
+.detail-faces figure, .prototype-photo { margin: 0; }
+.detail-faces img, .prototype-photo img { display: block; width: 100%; height: auto; border-radius: 6px; }
+.detail-faces figcaption, .prototype-photo figcaption { color: var(--muted); margin-top: 6px; }
+.prototype-photo { max-width: 650px; margin: 24px 0; }
+@media (max-width: 520px) {
+  .detail-faces { grid-template-columns: 1fr; }
+  .tile-actions button { min-height: 44px; }
+}
 </style></head><body>
 <header><div class="wrap nav"><a href="#home" class="logo"><img src="images/logo/logo.png" alt="PICO-8 Game Cards"></a><button class="menu-toggle" id="menuToggle" aria-label="Toggle navigation" aria-expanded="false">☰ Menu</button><nav id="nav"><a href="#collection">Collection</a><a href="#how">How it works</a><a href="#faq">FAQ</a><a href="#about">About</a><a class="btn small" href="#submit">Submit a game</a></nav></div></header>
 <main><div class="cover"><section class="wrap hero" id="home">
@@ -228,15 +265,29 @@ a:focus-visible, button:focus-visible { outline: 2px solid var(--accent); outlin
   <img src="images/cartes/recto/GT%20survivor.png" alt="Ghost Thief Survivor card front" width="744" height="1039" fetchpriority="high">
   <img src="images/cartes/verso/GT%20survivor.png" alt="Ghost Thief Survivor card back" width="744" height="1039">
 </a>
+  <div class="actions">
+    <a href="#collection" class="btn">Explore the collection</a>
+    <a href="#submit" class="btn secondary">Submit your game</a>
+  </div>
   <p class="lead">Help us turn PICO-8 games into physical trading cards. Our goal is to launch the first print run when the gallery reaches <strong>50 creator-approved cards</strong>.</p>
   <div class="print-goal">
     <label for="print-progress">Road to the first print run</label>
     <strong id="print-count"></strong>
     <progress id="print-progress" max="50" value="0"></progress>
   </div>
-  <div class="actions"><a href="#submit" class="btn">Submit your game ↗</a><a href="#collection" class="btn secondary">Explore the collection</a></div>
 </section></div>
-<section class="section alt" id="collection"><div class="wrap"><div class="sectionhead"><div><h2>Explore the cards</h2><p>Select a card to flip it over. Card numbers are provisional and may change before the first print run.</p></div></div><div class="toolbar"><input id="search" class="field" type="search" placeholder="Search games or creators…" aria-label="Search games or creators"><select id="genre" class="field" aria-label="Filter by genre"><option value="all">All genres</option></select><span class="count" id="count"></span></div><div class="gallery" id="gallery"></div><p id="empty" class="empty" hidden>No cards match your search.</p></div></section>
+<section class="section alt" id="collection"><div class="wrap"><div class="sectionhead"><div><h2>Explore the cards</h2><p>The first six cards feature my own games. I’m now inviting PICO-8 creators to help build the first printed collection.</p></div></div><div class="toolbar"><input id="search" class="field" type="search" placeholder="Search games or creators…" aria-label="Search games or creators"><select id="genre" class="field" aria-label="Filter by genre"><option value="all">All genres</option></select><span class="count" id="count"></span></div><div class="gallery" id="gallery"></div><p id="empty" class="empty" hidden>No cards match your search.</p>
+<p class="muted card-number-note">Card numbers may change before the first print run.</p>
+<dialog id="card-detail" aria-labelledby="card-detail-title">
+  <form method="dialog" class="detail-close"><button class="btn secondary small" autofocus>Close</button></form>
+  <h2 id="card-detail-title"></h2>
+  <p id="card-detail-description" class="muted"></p>
+  <a id="card-detail-play" target="_blank" rel="noopener noreferrer">Play the game ↗</a>
+  <div class="detail-faces">
+    <figure><img id="card-detail-front" alt=""><figcaption>Front</figcaption></figure>
+    <figure><img id="card-detail-back" alt=""><figcaption>Back</figcaption></figure>
+  </div>
+</dialog></div></section>
 <section class="section" id="how"><div class="wrap"><h2>From game to printed card</h2>
 <div class="steps">
   <div class="step"><b>01</b><h3>Pitch your game</h3><p>Send us a link to your PICO-8 game and tell us what makes it yours.</p></div>
@@ -247,9 +298,11 @@ a:focus-visible, button:focus-visible { outline: 2px solid var(--accent); outlin
 <section class="section alt" id="submit"><div class="wrap split"><div><h2>Bring your game to the collection</h2>
 <p class="lead">Give players a new way to discover your game, from a card they can flip online to one they can hold in their hands.</p>
 <div class="notice"><strong>You keep your rights.</strong> The gallery previews a collection designed to be printed and shared as physical cards.</div>
-<p class="muted">Fill in the form to open a draft in your email app. Review the message and send it when you are ready.</p></div><form class="panel" id="application" data-submission-email="contact.pico8gamecards@gmail.com"><h3 style="margin-top:0">Game submission</h3><label for="game">Game title *</label><input class="field" id="game" required maxlength="120" placeholder="Your PICO-8 game"><label for="creator">Creator nickname *</label><input class="field" id="creator" required maxlength="120" placeholder="Your developer name"><label for="url">Game URL *</label><input class="field" id="url" type="url" required placeholder="https://www.lexaloffle.com/bbs/..."><label for="gameGenre">Genre</label><select class="field" id="gameGenre"><option>Arcade</option><option>Action</option><option>Adventure</option><option>Platformer</option><option>Puzzle</option><option>Strategy</option><option>RPG</option><option>Other</option></select><label for="desc">Tell us about your game</label><textarea class="field" id="desc" maxlength="1000" placeholder="What makes your game special?"></textarea><fieldset class="permission-options">
+</div><form class="panel" id="application" data-submission-email="contact.pico8gamecards@gmail.com"><h3 style="margin-top:0">Game submission</h3><label for="game">Game title *</label><input class="field" id="game" required maxlength="120" placeholder="Your PICO-8 game"><label for="creator">Creator nickname *</label><input class="field" id="creator" required maxlength="120" placeholder="Your developer name"><label for="url">Game URL *</label><input class="field" id="url" type="url" required placeholder="https://www.lexaloffle.com/bbs/..."><label for="gameGenre">Genre</label><select class="field" id="gameGenre"></select><label for="desc">Tell us about your game</label><textarea class="field" id="desc" maxlength="1000" placeholder="What makes your game special?"></textarea>
+<p class="notice">This form opens a draft in your email app for you to review and send. If your game is selected, you’ll review both sides of the card before confirming the permissions in writing.</p>
+<fieldset class="permission-options">
 <legend>Card permissions (all required)</legend>
-<p>To submit your game, check all four boxes. If we select it, we’ll ask you to confirm these permissions in writing after you approve the final front and back.</p>
+<p>Check all four boxes to prepare your submission.</p>
 <p class="muted" id="permissionTerms">The proposed permission is non-exclusive and worldwide for three years from the date of your written confirmation, with no limit on the number of copies printed during that period. For six months after normal expiry, existing stock may be sold or given away as authorized.</p>
 <div class="check"><input type="checkbox" id="allowOnline" required><label for="allowOnline" aria-describedby="onlinePublicationHelp">Online publication</label></div>
 <p class="notice permission-help" id="onlinePublicationHelp">This lets us display the approved front and back of your card on the collection website.</p>
@@ -260,7 +313,7 @@ a:focus-visible, button:focus-visible { outline: 2px solid var(--accent); outlin
 <div class="check"><input type="checkbox" id="allowSale" required><label for="allowSale" aria-describedby="saleTerms">Sale of physical copies</label></div>
 <p class="notice permission-help" id="saleTerms">This lets us sell physical copies without paying royalties. The main goal is to cover costs, and the organizer may earn a modest profit.</p>
 </fieldset>
-<div class="check"><input type="checkbox" id="confirm" required><label for="confirm">I confirm that I am the rights holder of the game I’m submitting. *</label></div><div class="submission-actions"><button class="btn" type="submit">Email my submission ↗</button><p id="permissionError" class="permission-error" role="alert" hidden></p></div><div class="message" id="formMessage" role="status" aria-live="polite"></div></form></div></section>
+<div class="check"><input type="checkbox" id="confirm" required><label for="confirm">I confirm that I am the rights holder of the game I’m submitting. *</label></div><div class="submission-actions"><button class="btn" type="submit">Open email draft</button><p id="permissionError" class="permission-error" role="alert" hidden></p></div><div class="message" id="formMessage" role="status" aria-live="polite"></div></form></div></section>
 <section class="section" id="faq">
   <div class="wrap">
     <h2>FAQ</h2>
@@ -287,7 +340,7 @@ a:focus-visible, button:focus-visible { outline: 2px solid var(--accent); outlin
       </div>
       <div class="faq-item">
         <h3>Can the organizer remove an approved card?</h3>
-        <p>Until the first print run begins, the organizer reserves the right to remove any card from the collection and take it down from the online gallery without giving a reason, even after the card has been approved and published.</p>
+        <p>Before the first print run begins, I may remove a card from the collection and the online gallery, even after approval. For example, I may reconsider a card if the game changes substantially, if the rights holder has second thoughts about participating, or if the original agreement needs to be revisited.</p>
       </div>
       <div class="faq-item">
         <h3>Can I remove my card or change my permissions?</h3>
@@ -300,7 +353,12 @@ a:focus-visible, button:focus-visible { outline: 2px solid var(--accent); outlin
     </div>
   </div>
 </section>
-<section class="section alt" id="about"><div class="wrap"><div class="eyebrow">About the project</div><h2>Built for the love of tiny games.</h2><p class="lead">PICO-8 Game Cards is an independent fan initiative inspired by vintage video game packaging, retro trading cards and the creativity of the PICO-8 community. Each card is a small tribute to its creator, with a link to discover the original game.</p><div class="notice warning"><strong>Unofficial project.</strong> Not affiliated with, endorsed by or sponsored by Lexaloffle or PICO-8. Game artwork remains the property of its respective rights holders. We use approved artwork only for the purposes agreed in writing.</div></div></section></main>
+<section class="section alt" id="about"><div class="wrap"><div class="eyebrow">About the project</div><h2>Built for the love of tiny games.</h2><p class="lead">PICO-8 Game Cards is an independent fan initiative inspired by vintage video game packaging, retro trading cards and the creativity of the PICO-8 community. Each card is a small tribute to its creator, with a link to discover the original game.</p><!-- Add a real prototype photo at images/prototypes.jpg to display this figure. -->
+<figure class="prototype-photo" id="prototype-photo" hidden>
+  <img alt="Physical prototypes of PICO-8 Game Cards">
+  <figcaption>Early printed prototypes from the collection.</figcaption>
+</figure>
+<div class="notice warning"><strong>Unofficial project.</strong> Not affiliated with, endorsed by or sponsored by Lexaloffle or PICO-8. Game artwork remains the property of its respective rights holders. We use approved artwork only for the purposes agreed in writing.</div></div></section></main>
 <footer><div class="wrap">© <span id="year"></span> PICO-8 Game Cards — Independent fan project · <a href="#about">About & rights</a></div></footer>
 <script>
 'use strict';
@@ -312,6 +370,7 @@ const cards = [
     title: 'Missing jewel',
     creator: 'Asté',
     genre: 'Puzzle',
+    description: 'Compare two sets of gems and spot the missing shape or color within ten seconds.',
     url: 'https://www.lexaloffle.com/bbs/?tid=150464'
   },
   {
@@ -320,6 +379,7 @@ const cards = [
     title: 'Ghost thief pico',
     creator: 'Asté',
     genre: 'Rogue-like',
+    description: 'Play as a ghostly thief in a retro roguelike.',
     url: 'https://www.lexaloffle.com/bbs/?tid=154595'
   },
   {
@@ -328,6 +388,7 @@ const cards = [
     title: 'Bastion merge',
     creator: 'Asté',
     genre: 'Strategy',
+    description: 'A strategy game built around merging.',
     url: 'https://www.lexaloffle.com/bbs/?tid=156225'
   },
   {
@@ -336,6 +397,7 @@ const cards = [
     title: 'Picoshoot',
     creator: 'Asté',
     genre: 'Sports',
+    description: 'Score as many penalties as you can in two minutes.',
     url: 'https://www.lexaloffle.com/bbs/?tid=157166'
   },
   {
@@ -344,6 +406,7 @@ const cards = [
     title: 'Asté and Ghost thief podcast',
     creator: 'Asté',
     genre: 'Story',
+    description: 'The first episode of a pixel-art podcast starring Asté and Ghost Thief.',
     url: 'https://www.lexaloffle.com/bbs/?tid=157338'
   },
   {
@@ -352,6 +415,7 @@ const cards = [
     title: 'Ghost thief survivor',
     creator: 'Asté',
     genre: 'Rogue-like',
+    description: 'Survive 15 minutes of monster hordes, collect gems and upgrade your arsenal.',
     url: 'https://www.lexaloffle.com/bbs/?tid=160000'
   }
 ];
@@ -366,9 +430,32 @@ const search = document.querySelector('#search');
 const genre = document.querySelector('#genre');
 const escapeHtml=s=>String(s).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
 
-for (const name of [...new Set(cards.map(card => card.genre))].sort()) {
-  genre.add(new Option(name, name));
+const publishedGenres = new Set(cards.map(card => card.genre));
+const genres = [...new Set([
+  'Action', 'Adventure', 'Arcade', 'Platformer', 'Puzzle', 'Rogue-like',
+  'RPG', 'Sports', 'Story', 'Strategy', ...publishedGenres
+])].sort((a, b) => a.localeCompare(b, 'en'));
+const submissionGenre = document.querySelector('#gameGenre');
+
+for (const name of [...genres, 'Other']) {
+  submissionGenre.add(new Option(name, name));
+  if (publishedGenres.has(name)) genre.add(new Option(name, name));
 }
+submissionGenre.value = 'Arcade';
+
+const cardDetail = document.querySelector('#card-detail');
+const detailTitle = document.querySelector('#card-detail-title');
+const detailDescription = document.querySelector('#card-detail-description');
+const detailPlay = document.querySelector('#card-detail-play');
+const detailFront = document.querySelector('#card-detail-front');
+const detailBack = document.querySelector('#card-detail-back');
+
+const prototypePhoto = document.querySelector('#prototype-photo');
+const prototypeImage = prototypePhoto.querySelector('img');
+prototypeImage.addEventListener('load', () => {
+  prototypePhoto.hidden = false;
+}, { once: true });
+prototypeImage.src = 'images/prototypes.jpg';
 
 function render() {
   const query = search.value.toLocaleLowerCase().trim();
@@ -384,7 +471,7 @@ function render() {
     const filename = encodeURIComponent(card.slug) + '.png';
 
     return `<article class="tile">
-      <button class="card-flip" type="button" aria-label="Show the back of ${title}" aria-pressed="false">
+      <button class="card-flip" type="button" aria-label="Flip card: ${title}" aria-pressed="false">
         <span class="card-faces">
           <span class="card-face">
             <img src="images/cartes/recto/${filename}" alt="">
@@ -394,6 +481,10 @@ function render() {
           </span>
         </span>
       </button>
+      <div class="tile-actions">
+        <button type="button" class="card-turn" aria-label="Flip card: ${title}" aria-pressed="false">Flip card</button>
+        <button type="button" class="card-enlarge" data-card="${escapeHtml(card.id)}" aria-label="Enlarge card: ${title}">Enlarge</button>
+      </div>
       <div class="number">#${escapeHtml(card.id)} · ${escapeHtml(card.genre)}</div>
       <h3>${title}</h3>
       <p>By ${escapeHtml(card.creator)}</p>
@@ -407,11 +498,31 @@ function render() {
 }
 
 gallery.addEventListener('click', event => {
-  const button = event.target.closest('.card-flip');
-  if (!button) return;
+  const enlarge = event.target.closest('.card-enlarge');
+  if (enlarge) {
+    const card = cards.find(entry => entry.id === enlarge.dataset.card);
+    const filename = encodeURIComponent(card.slug) + '.png';
+    detailTitle.textContent = card.title;
+    detailDescription.textContent = card.description || '';
+    detailPlay.hidden = !card.url;
+    if (card.url) detailPlay.href = card.url;
+    detailFront.src = 'images/cartes/recto/' + filename;
+    detailFront.alt = 'Front of the ' + card.title + ' card';
+    detailBack.src = 'images/cartes/verso/' + filename;
+    detailBack.alt = 'Back of the ' + card.title + ' card';
+    cardDetail.showModal();
+    return;
+  }
 
-  const flipped = button.getAttribute('aria-pressed') === 'true';
-  button.setAttribute('aria-pressed', String(!flipped));
+  const control = event.target.closest('.card-flip, .card-turn');
+  if (!control) return;
+
+  const tile = control.closest('.tile');
+  const imageButton = tile.querySelector('.card-flip');
+  const textButton = tile.querySelector('.card-turn');
+  const flipped = imageButton.getAttribute('aria-pressed') === 'true';
+  imageButton.setAttribute('aria-pressed', String(!flipped));
+  textButton.setAttribute('aria-pressed', String(!flipped));
 });
 search.addEventListener('input', render);
 genre.addEventListener('change', render);
